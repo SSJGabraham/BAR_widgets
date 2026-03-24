@@ -9,7 +9,7 @@ function widget:GetInfo()
         version = "2.5",
         layer   = 999,
         enabled = true,
-        handler = true,
+        handler = true
     }
 end
 
@@ -30,29 +30,29 @@ end
 local custom_keybind_mode = false                  -- set to true for custom keybind
 
 local pingCommands = {                             -- the options in the ping wheel, displayed clockwise from 12 o'clock
-    { name = "Attack",  color = { 1, 0.5, 0.3, 1 } }, -- color is optional, if no color is chosen it will be white
-    { name = "Rally",   color = { 0.4, 0.8, 0.4, 1 } },
-    { name = "Defend",  color = { 0.7, 0.9, 1, 1 } },
-    { name = "Retreat", color = { 0.9, 0.7, 1, 1 } },
-    { name = "Alert",   color = { 1, 1, 0.5, 1 } },
-    { name = "Reclaim", color = { 0.7, 1, 0.7, 1 } },
-    { name = "Stop",    color = { 1, 0.2, 0.2, 1 } },
-    { name = "Wait",    color = { 0.7, 0.6, 0.3, 1 } },
+    { name = "🎯Attack",  color = { 1, 0.5, 0.3, 1 } }, -- color is optional, if no color is chosen it will be white
+    { name = "🤖Com here",       color = { 1, 1, 0.4, 1 } },
+    { name = "🛡️Defend",  color = { 0.3, 0.8, 1, 1 } },
+    { name = "📡Radar pls",   color = { 0.4, 0.8, 0.4, 1 } },
+    { name = "⏸️Wait",   color = { 1, 1, 0.4, 1 } },
+    { name = "♻️Reclaim", color = { 0.4, 0.8, 0.4, 1 } },
+    { name = "🛑Stop",    color = { 1, 0.2, 0.2, 1 } },
+    { name = "Air",    color = { 0.3, 0.8, 1, 1 }  },
 }
 
 local pingMessages = {
     -- let's give these commands rainbow colors!
-    { name = "TY!",      color = { 1, 1, 1, 1 } },
-    { name = "GJ!",      color = { 1, 0.5, 0, 1 } },
-    { name = "DANGER!",  color = { 1, 1, 0, 1 } },
-    { name = "Sorry!",   color = { 0, 1, 0, 1 } },
-    { name = "LOL",      color = { 0, 1, 1, 1 } },
-    { name = "No",       color = { 0, 0, 1, 1 } },
-    { name = "OMW",      color = { 0.5, 0, 1, 1 } },
-    { name = "For sale", color = { 1, 0, 1, 1 } },
+    { name = "D-gun!",      color = { 1, 1, 0.1, 1 } },
+    { name = "Nice work"},-- ,      color = { 0, 0.8, 0.3, 1 } },
+    { name = "Thanks"},-- ,  color = { 1, 1, 1, 1 } },
+    { name = "Sorry!"},-- ,   color = { 1, 1, 1, 1 } },
+    { name = "On my way"},-- , color = { 0.9, 0.7, 1, 1 } },
+    { name = "T3 coming"},-- ,      color = { 0.6, 0.8, 1, 1 } },
+    { name = "Getting pushed"},-- ,      color =  { 0.6, 0.8, 1, 1 } },
+    { name = "☢️Nuking here", color = { 1, 0.2, 0.2, 1 } },
 }
 
-local styleChoice = 1 -- 1 = circle, 2 = ring, 3 = custom
+local styleChoice = 2 -- 1 = circle, 2 = ring, 3 = custom
 
 -- Custom style parameters
 local styleConfig = {
@@ -71,8 +71,8 @@ local styleConfig = {
         bgTexture = "LuaUI/images/enemyspotter.dds",
         bgTextureSizeRatio = 1.9,
         bgTextureColor = { 0, 0, 0, 0.66 },
-        dividerInnerRatio = 0.6,
-        dividerOuterRatio = 1.2,
+        dividerInnerRatio = 0.9,
+        dividerOuterRatio = 1.1,
         dividerColor = { 1, 1, 1, 0.15 },
         textAlignRadiusRatio = 1.1,
     },
@@ -104,11 +104,11 @@ local spamControlFrames = 8 -- how many frames to wait before allowing another p
 local viewSizeX, viewSizeY = Spring.GetViewGeometry()
 
 -- Sizes and colors
-local pingWheelRadius = 0.1 * math.min(viewSizeX, viewSizeY) -- 10% of the screen size
+local pingWheelRadius = 0.12 * math.min(viewSizeX, viewSizeY) -- 0.1 = 10% of the screen size
 local pingWheelThickness = 2                                 -- thickness of the ping wheel line drawing
-local centerDotSize = 20                                     -- size of the center dot
-local deadZoneRadiusRatio = 0.3                              -- the center "no selection" area as a ratio of the ping wheel radius
-local outerLimitRadiusRatio = 5                              -- the outer limit ratio where "no selection" is active
+local centerDotSize = 16                                     -- size of the center dot
+local deadZoneRadiusRatio = 0.25                              -- the center "no selection" area as a ratio of the ping wheel radius
+local outerLimitRadiusRatio = 3                              -- the outer limit ratio where "no selection" is active
 
 local pingWheelTextColor = { 1, 1, 1, 0.7 }
 local pingWheelTextSize = 25
@@ -140,7 +140,6 @@ local pingWorldLocation
 local pingWheelScreenLocation
 local pingWheelSelection = 0
 local spamControl = 0
---local gameFrame = 0
 local flashFrame = 0
 local flashing = false
 local gameFrame = 0
@@ -200,7 +199,7 @@ end
 
 -- when widget exits, re-enable the mouse build spacing widget
 function widget:Shutdown()
-    --:EnableWidget("Mouse Buildspacing")
+    widgetHandler:EnableWidget("Mouse Buildspacing")
 end
 
 -- Store the ping location in pingWorldLocation
@@ -575,7 +574,6 @@ function widget:DrawScreen()
         glEndText()
 
         glLineWidth(1)
-        glBlending(false)
     end
     glPopMatrix()
 end
